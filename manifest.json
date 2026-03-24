@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Flip the Shell",
+  "version": "2.9",
+  "description": "Universal Reveal v2.9: Ultimate detection for all shell types with CORS bypass and k-auto-scan.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/view_icon.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { width: 180px; padding: 12px; font-family: sans-serif; background: #fff; }
+    h2 { font-size: 14px; margin: 0 0 10px 0; color: #5d4037; }
+    label { font-size: 11px; color: #666; display: block; margin-bottom: 4px; }
+    select { width: 100%; padding: 4px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px; cursor: pointer; }
+    .footer { margin-top: 10px; font-size: 9px; color: #bbb; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>🐚 Flip the Shell v1.7</h2>
+  <label for="posSelect">View Icon Position:</label>
+  <select id="posSelect">
+    <option value="center">Center (Default)</option>
+    <option value="top-left">Top Left</option>
+    <option value="top-right">Top Right</option>
+    <option value="bottom-left">Bottom Left</option>
+    <option value="bottom-right">Bottom Right</option>
+  </select>
+  <div class="footer">Settings auto-saved</div>
+  <script src="popup.js"></script>
+</body>
+</html>

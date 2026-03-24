@@ -1,0 +1,8 @@
+#flip-the-shell-icon {
+    transition: transform 0.2s;
+}
+
+#flip-the-shell-icon:hover {
+    transform: scale(1.2);
+    background-color: white;
+}
