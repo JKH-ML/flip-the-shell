@@ -26,9 +26,13 @@
 - 이미지 위에 마우스를 올리면 중앙(혹은 설정된 위치)에 **돋보기 아이콘**이 나타납니다.
 - 아이콘을 클릭하면 내부에 숨겨져 있던 이미지나 비디오가 원본 화질로 즉시 나타납니다!
 
-## 🚀 설치 안내
+## 🚀 설치 안내 (Installation)
 
-### [크롬 웹스토어에서 바로 설치](https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar)
+<div align="center">
+  <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar">
+    <img src="https://storage.googleapis.com/chrome-gcm-v1.appspot.com/badges/en/chrome_web_store-static.png" alt="Available in the Chrome Web Store" height="70">
+  </a>
+</div>
 
 ### 개발자 모드 설치
 1. 본 저장소를 클론합니다.
