@@ -105,13 +105,13 @@ document.addEventListener('mousemove', (e) => {
         const elements = document.elementsFromPoint(e.clientX, e.clientY);
         const img = elements.find(el => el.tagName === 'IMG');
         
-        if (img && img.naturalWidth > 100) {
+        if (img && img.naturalWidth > 30) { // Detection for small RunningHub thumbnails
             checkShellSignature(img).then(data => {
                 if (data && data.isShell) {
                     if (!hoverIcon) hoverIcon = createHoverIcon();
                     currentImg = img;
                     const rect = img.getBoundingClientRect();
-                    const iconSize = 32; let left, top; const margin = 10;
+                    const iconSize = 32; let left, top; const margin = 5; // Reduced margin for small images
                     switch(iconPosition) {
                         case 'top-left': left = rect.left + margin; top = rect.top + margin; break;
                         case 'top-right': left = rect.right - iconSize - margin; top = rect.top + margin; break;
