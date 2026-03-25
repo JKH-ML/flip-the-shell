@@ -1,92 +1,60 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>개인정보처리방침 - Flip the Shell</title>
+    <title>Privacy Policy - Flip the Shell</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 40px 20px;
             background-color: #f9f9f9;
         }
         .container {
-            background: white;
+            background-color: #fff;
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        h1 {
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            color: #2c3e50;
-        }
-        h2 {
-            margin-top: 30px;
-            color: #2c3e50;
-            font-size: 1.4em;
-        }
-        p, li {
-            margin-bottom: 10px;
-        }
-        .footer {
-            margin-top: 50px;
-            font-size: 0.9em;
-            color: #7f8c8d;
-            text-align: center;
-        }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; color: #111; }
+        h2 { margin-top: 30px; color: #444; }
+        p { margin-bottom: 20px; }
+        ul { margin-bottom: 20px; }
+        li { margin-bottom: 10px; }
+        footer { margin-top: 40px; text-align: center; font-size: 0.9em; color: #777; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>개인정보처리방침</h1>
-        <p><strong>Flip the Shell</strong>(이하 '확장 프로그램')은 사용자의 개인정보를 소중하게 생각하며, 관련 법령을 준수하기 위해 최선을 다하고 있습니다. 본 방침은 확장 프로그램이 사용자의 정보를 어떻게 처리하는지 설명합니다.</p>
+        <h1>Privacy Policy for Flip the Shell</h1>
+        <p>Last updated: March 26, 2026</p>
 
-        <h2>1. 개인정보의 수집 및 이용 목적</h2>
-        <p>본 확장 프로그램은 원칙적으로 사용자의 개인 식별 정보를 수집하거나 외부 서버로 전송하지 않습니다. 모든 데이터 처리는 사용자의 브라우저 내에서 로컬로 수행됩니다.</p>
-        <ul>
-            <li><strong>설정 정보 저장:</strong> 사용자가 선택한 아이콘 위치(iconPosition) 등의 설정값을 유지하기 위해 크롬 로컬 저장소(chrome.storage.local)를 사용합니다.</li>
-        </ul>
+        <p>Flip the Shell is a Chrome extension designed to detect and extract hidden data from images using steganography techniques. We take your privacy seriously.</p>
 
-        <h2>2. 수집하는 개인정보 항목</h2>
-        <p>확장 프로그램은 다음과 같은 비개인적 데이터를 처리합니다.</p>
-        <ul>
-            <li>사용자 설정 값 (예: 아이콘 노출 위치)</li>
-        </ul>
-        <p>이외에 사용자의 웹 서핑 기록, 비밀번호, 쿠키 등 민감한 개인정보는 일절 수집하거나 저장하지 않습니다.</p>
+        <h2>1. Information We Do Not Collect</h2>
+        <p><strong>Personal Information:</strong> Flip the Shell does not collect, store, or transmit any personal information, such as your name, email address, browsing history (outside of the detection feature), or any other identifying data.</p>
+        <p><strong>Analytics:</strong> We do not use any third-party analytics services to track your usage of the extension.</p>
 
-        <h2>3. 데이터의 제3자 제공 및 위탁</h2>
-        <p>본 확장 프로그램은 수집된 정보를 외부 서버로 전송하지 않으며, 따라서 제3자에게 제공하거나 처리를 위탁하지 않습니다.</p>
+        <h2>2. How the Extension Works</h2>
+        <p><strong>Local Processing:</strong> All image analysis, scanning, and data extraction are performed <strong>locally on your device</strong> within your browser. No image data or extracted content is ever sent to our servers or any third parties.</p>
+        <p><strong>Permissions:</strong> The extension requires specific permissions (activeTab, scripting, storage, all_urls) to function. These are used solely to scan images on the pages you visit for "SNAIL" signatures and to bypass CORS restrictions for technical analysis.</p>
 
-        <h2>4. 권한 사용 안내</h2>
-        <p>기능 수행을 위해 다음과 같은 권한을 사용합니다.</p>
-        <ul>
-            <li><strong>storage:</strong> 사용자의 설정 값을 로컬 브라우저에 저장하기 위해 사용합니다.</li>
-            <li><strong>activeTab / host_permissions:</strong> 웹 페이지 내 이미지를 분석하고 숨겨진 데이터를 해독하기 위해 해당 페이지의 콘텐츠에 접근합니다.</li>
-            <li><strong>scripting:</strong> 이미지 해독 로직을 실행하기 위해 사용됩니다.</li>
-        </ul>
+        <h2>3. Third-Party Links</h2>
+        <p>Our extension and documentation may contain links to third-party websites (e.g., GitHub, Chrome Web Store). We are not responsible for the privacy practices of these external sites.</p>
 
-        <h2>5. 개인정보의 파기</h2>
-        <p>모든 데이터는 사용자의 로컬 브라우저에 저장되므로, 사용자가 확장 프로그램을 삭제하면 관련 설정 데이터도 즉시 함께 파기됩니다.</p>
+        <h2>4. Changes to This Policy</h2>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
 
-        <h2>6. 이용자의 권리 및 행사 방법</h2>
-        <p>이용자는 언제든지 확장 프로그램의 설정을 변경하거나 삭제함으로써 데이터 처리를 거부할 수 있습니다.</p>
+        <h2>5. Contact Us</h2>
+        <p>If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us through our GitHub repository.</p>
 
-        <h2>7. 문의처</h2>
-        <p>개인정보 처리와 관련하여 문의 사항이 있으시면 아래로 연락해 주시기 바랍니다.</p>
-        <ul>
-            <li>개발자 이름: JKH</li>
-            <li>이메일: banghak2da@gmail.com</li>
-        </ul>
-
-        <div class="footer">
-            <p>공고일자: 2026년 3월 23일</p>
-            <p>시행일자: 2026년 3월 23일</p>
-        </div>
+        <footer>
+            &copy; 2026 JKH-ML. All rights reserved.
+        </footer>
     </div>
 </body>
 </html>

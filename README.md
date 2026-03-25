@@ -62,8 +62,8 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📄 Policy & Caution
 
-- **Privacy Policy:** Refer to [index.html](./index.html) (Mandatory for Chrome Web Store).
-- This tool is designed for security research and creative data sharing. Please do not use it to infringe upon the rights of others.
+- **Privacy Policy:** Detailed information can be found at [https://jkh-ml.github.io/flip-the-shell/](https://jkh-ml.github.io/flip-the-shell/) (Required for Chrome Web Store).
+- **Disclaimer:** This tool is intended for security research and creative data sharing. Users are responsible for ensuring their use of this tool complies with all applicable laws and regulations. Do not use this tool to infringe upon the rights of others.
 
 ---
 **Maintained by [JKH-ML](https://github.com/JKH-ML)**
