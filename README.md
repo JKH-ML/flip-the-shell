@@ -35,16 +35,30 @@ Click the icon to instantly reveal and play the original hidden image or video i
   </a>
 </div>
 
-### Developer Mode Installation
-1. Clone this repository.
-2. Go to `chrome://extensions/` and enable 'Developer mode'.
-3. Click 'Load unpacked' and select the project folder.
+## 💻 Technical Details: The SNAIL Engine
 
-## 💻 Technical Details
+The core of this system is the **SNAIL Protocol**, a custom steganography implementation designed for high-capacity data hiding and rapid browser-side extraction.
 
-- **SNAIL Protocol:** Variable bit-depth steganography algorithm (Custom Implementation).
-- **Performance:** Optimized with `WeakMap` caching and `willReadFrequently` canvas context to maintain smooth browsing.
-- **Compatibility:** Based on Manifest V3, optimized for the latest Chrome browsers.
+### 1. Data Hiding (The Encoder)
+The `ComfyUI-SnailShell` node hides binary data within the pixel values of a carrier image (the "Shell").
+- **Bit-Depth Steganography (k):** Instead of simple LSB (Least Significant Bit), it uses a variable bit-depth $k \in \{2, 4, 8\}$. This allows for different levels of capacity vs. invisibility.
+- **Pixel Modulation:** For each RGB channel of a pixel, the bottom $k$ bits are replaced with the hidden data's bits using the formula: $P_{new} = (P_{old} - (P_{old} \pmod{2^k})) + \text{data\_bits}$.
+- **SNAIL Signature:** A 40-bit unique signature (`SNAIL`) is embedded at a specific offset. This signature allows the extension to distinguish between normal images and valid "Shell" images.
+
+### 2. Real-time Detection (The Scanner)
+The extension runs an optimized background scanner on every image hover:
+- **k-Auto-Scan:** It doesn't know the bit-depth $k$ beforehand. It speculatively decodes the first few bytes using all possible $k$ values (2, 4, 8) until it finds the `SNAIL` signature.
+- **Efficiency:** To prevent UI lag, it uses `WeakMap` to cache scan results and skips certain pixel areas (SKIP_W_RATIO, SKIP_H_RATIO) where UI elements or metadata are typically located.
+- **CORS Handling:** When a standard `canvas.getImageData()` fails due to Cross-Origin policies, the extension triggers a high-privilege `fetch` to retrieve the raw image data as a Blob and reconstructs it.
+
+### 3. Extraction & Reconstruction (The Decoder)
+Once the user clicks the icon, the full bitstream is extracted:
+- **Bit-to-Byte Reassembly:** The extracted bits are packed back into a `Uint8Array`.
+- **Header Parsing:** It reads the metadata header containing the file extension (e.g., `.png`, `.mp4`) and the total data length.
+- **Dynamic Rendering:**
+  - **Images:** Converted to a `Blob URL` and displayed in a high-quality overlay.
+  - **Videos:** Streamed through a `video` element with hardware acceleration.
+  - **Text:** Decoded using `TextDecoder` and shown in a pre-formatted box.
 
 ## 📄 Policy & Caution
 
