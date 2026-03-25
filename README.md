@@ -15,9 +15,9 @@
 ---
 
 ### 🌐 Optimized for RunningHub
-[RunningHub](https://www.runninghub.ai/) is the ultimate cloud platform for ComfyUI. **Flip the Shell** is designed to work seamlessly within the RunningHub environment, allowing you to scan task results and reveal hidden "SNAIL" data directly from your dashboard.
+<a href="https://www.runninghub.ai/" target="_blank" rel="noopener noreferrer">RunningHub</a> is the ultimate cloud platform for ComfyUI. **Flip the Shell** is designed to work seamlessly within the RunningHub environment, allowing you to scan task results and reveal hidden "SNAIL" data directly from your dashboard.
 
-This tool is perfectly integrated with the [ComfyUI-SnailShell](https://github.com/JKH-ML/ComfyUI-SnailShell) custom node, allowing users to verify hidden content directly in the browser without any complex decoding processes.
+This tool is perfectly integrated with the <a href="https://github.com/JKH-ML/ComfyUI-SnailShell" target="_blank" rel="noopener noreferrer">ComfyUI-SnailShell</a> custom node, allowing users to verify hidden content directly in the browser without any complex decoding processes.
 
 ## 🌟 Key Feature: SNAIL Steganography Integration
 
@@ -31,7 +31,7 @@ Beyond simple shell detection, it restores hidden data encrypted/compressed with
 ## 🛠 Usage (RunningHub Example)
 
 ### 1. Hide Your Data
-Use the [Demo Workflow (AVoid Censorship by Snail-Shell.json)](https://github.com/JKH-ML/ComfyUI-SnailShell/blob/main/AVoid%20Censorship%20by%20Snail-Shell.json) in ComfyUI or RunningHub. This workflow allows you to hide your own images or sensitive data inside a "Shell Image."
+Use the <a href="https://github.com/JKH-ML/ComfyUI-SnailShell/blob/main/AVoid%20Censorship%20by%20Snail-Shell.json" target="_blank" rel="noopener noreferrer">Demo Workflow (AVoid Censorship by Snail-Shell.json)</a> in ComfyUI or RunningHub. This workflow allows you to hide your own images or sensitive data inside a "Shell Image."
 
 ### 2. Check on RunningHub
 - After generating the image, go to your **Task List** on RunningHub.
@@ -69,8 +69,8 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📄 Policy & Caution
 
-- **Privacy Policy:** Detailed information can be found at [https://jkh-ml.github.io/flip-the-shell/](https://jkh-ml.github.io/flip-the-shell/)
+- **Privacy Policy:** Detailed information can be found at <a href="https://jkh-ml.github.io/flip-the-shell/" target="_blank" rel="noopener noreferrer">https://jkh-ml.github.io/flip-the-shell/</a>
 - **Disclaimer:** This tool is intended for security research and creative data sharing. Users are responsible for ensuring their use of this tool complies with all applicable laws and regulations. Do not use this tool to infringe upon the rights of others.
 
 ---
-**Maintained by [JKH-ML](https://github.com/JKH-ML)**
+**Maintained by <a href="https://github.com/JKH-ML" target="_blank" rel="noopener noreferrer">JKH-ML</a>**
