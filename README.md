@@ -13,18 +13,19 @@ Beyond simple shell detection, it restores hidden data encrypted/compressed with
 - **Instant Extraction & Playback:** Displays hidden images in a popup and provides instant streaming for **MP4 videos**.
 - **CORS Bypass:** Utilizes extension privileges to analyze images even on sites with strict security policies.
 
-## 🛠 Usage (The Snail Workflow)
+## 🛠 Usage (RunningHub Example)
 
-### 1. Hide Data (ComfyUI)
-Use [ComfyUI-SnailShell](https://github.com/JKH-ML/ComfyUI-SnailShell) to generate a "Shell Image" that hides a secret image or video. The output looks like a perfectly normal image to the naked eye.
+### 1. Hide Your Data
+Use the [Demo Workflow (AVoid Censorship by Snail-Shell.json)](https://github.com/JKH-ML/ComfyUI-SnailShell/blob/main/AVoid%20Censorship%20by%20Snail-Shell.json) in ComfyUI or RunningHub. This workflow allows you to hide your own images or sensitive data inside a "Shell Image."
 
-### 2. Upload & Share
-Upload the generated image to any community, SNS, or image hosting site.
+### 2. Check on RunningHub
+- After generating the image, go to your **Task List** on RunningHub.
+- Click on the generated **Shell Image** to enlarge it.
+- Hover your mouse over the enlarged image, and a **view icon (eye/magnifier)** will appear.
+- **Tip:** If the icon doesn't appear, try closing the image preview and opening it again to trigger the scan.
 
-### 3. Reveal Data (Flip the Shell)
-- View the image using a browser with **Flip the Shell** installed.
-- Hover over the image to see a **magnifying glass icon** appear at the center (or your configured position).
-- Click the icon to instantly reveal the hidden image or video in its original quality!
+### 3. Reveal the Secret
+Click the icon to instantly reveal and play the original hidden image or video in high quality!
 
 ## 🚀 Installation
 
