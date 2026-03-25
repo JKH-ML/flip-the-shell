@@ -3,84 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <style>
+    * { box-sizing: border-box; }
     body { 
-      width: 220px; 
+      width: 240px; 
       padding: 16px; 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      background: #1a1c1e; 
+      background: #121417; 
       color: #e2e2e6;
       margin: 0;
     }
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
     .header img {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
     }
     h2 { 
       font-size: 16px; 
       margin: 0; 
       color: #ffffff;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
     .version {
       font-size: 10px;
       color: #909094;
+      background: #2e3033;
+      padding: 2px 6px;
+      border-radius: 4px;
       margin-left: auto;
     }
     .section {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
     label { 
-      font-size: 12px; 
-      color: #c4c6cf; 
+      font-size: 11px; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #909094; 
       display: block; 
       margin-bottom: 8px; 
+      font-weight: 600;
     }
     select { 
       width: 100%; 
-      padding: 8px; 
+      padding: 10px; 
       border-radius: 8px; 
-      border: 1px solid #44474e; 
-      background: #2e3033;
+      border: 1px solid #3c4043; 
+      background: #1f2124;
       color: #ffffff;
       font-size: 13px; 
       cursor: pointer;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
+    }
+    select:hover {
+      border-color: #5f6368;
+      background: #25282c;
     }
     select:focus {
-      border-color: #6366f1;
+      border-color: #8ab4f8;
+      box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.2);
+    }
+    .btn-container {
+      margin-top: 10px;
     }
     .btn-runninghub {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       width: 100%;
-      padding: 10px;
-      background: #87d530;
+      height: 40px;
+      background: linear-gradient(135deg, #87d530 0%, #76bc29 100%);
       color: #000;
       text-decoration: none;
       border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      transition: opacity 0.2s;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(135, 213, 48, 0.2);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      cursor: pointer;
     }
     .btn-runninghub:hover {
-      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(135, 213, 48, 0.3);
+      filter: brightness(1.05);
+    }
+    .btn-runninghub:active {
+      transform: translateY(0);
     }
     .footer { 
-      margin-top: 12px; 
+      margin-top: 16px; 
       font-size: 10px; 
-      color: #909094; 
+      color: #5f6368; 
       text-align: center; 
-      border-top: 1px solid #44474e;
-      padding-top: 12px;
+      border-top: 1px solid #1f2124;
+      padding-top: 16px;
     }
   </style>
 </head>
@@ -102,12 +126,14 @@
     </select>
   </div>
 
-  <a href="https://www.runninghub.ai/?inviteCode=ux1wt2if" target="_blank" class="btn-runninghub">
-    ⚡ Open RunningHub
-  </a>
+  <div class="btn-container">
+    <a href="https://www.runninghub.ai/?inviteCode=ux1wt2if" target="_blank" class="btn-runninghub">
+      ⚡ Open RunningHub
+    </a>
+  </div>
 
   <div class="footer">
-    Settings are applied instantly
+    Settings saved automatically
   </div>
   <script src="popup.js"></script>
 </body>
