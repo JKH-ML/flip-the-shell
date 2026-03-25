@@ -6,9 +6,16 @@
   <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/🚀%20Install%20on%20Chrome%20Web%20Store-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store">
   </a>
+  &nbsp;
+  <a href="https://www.runninghub.ai/?inviteCode=ux1wt2if" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/⚡%20Run%20on%20RunningHub-87d530?style=for-the-badge&logo=rocket&logoColor=white" alt="RunningHub">
+  </a>
 </div>
 
 ---
+
+### 🌐 Optimized for RunningHub
+[RunningHub](https://www.runninghub.ai/) is the ultimate cloud platform for ComfyUI. **Flip the Shell** is designed to work seamlessly within the RunningHub environment, allowing you to scan task results and reveal hidden "SNAIL" data directly from your dashboard.
 
 This tool is perfectly integrated with the [ComfyUI-SnailShell](https://github.com/JKH-ML/ComfyUI-SnailShell) custom node, allowing users to verify hidden content directly in the browser without any complex decoding processes.
 
