@@ -1,6 +1,6 @@
 # Flip the Shell 🐚 + SnailShell 🐌
 
-**Flip the Shell** is a powerful Chrome extension that detects and instantly extracts hidden data (images, videos, etc.) from **Shell Images** uploaded to the web.
+**Flip the Shell** is a powerful Chrome extension—**perfectly optimized for RunningHub users**—that detects and instantly extracts hidden data (images, videos, etc.) from **Shell Images** uploaded to the web.
 
 <div align="center">
   <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar" target="_blank" rel="noopener noreferrer">
