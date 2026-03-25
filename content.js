@@ -1,8 +1,7 @@
-// Flip the Shell Extension v2.9 - Ultimate Detection Fix
-let hoverIcon = null;
-let currentImg = null;
+// Flip the Shell Extension v2.9 - RunningHub Auto-Detection Fix
 let iconPosition = 'center';
 const shellCache = new WeakMap();
+const iconMap = new WeakMap(); // Tracks if an icon is already displayed for an image
 
 const SKIP_W_RATIO = 0.40;
 const SKIP_H_RATIO = 0.08;
@@ -10,19 +9,68 @@ const SKIP_H_RATIO = 0.08;
 chrome.storage.local.get(['iconPosition'], (result) => { if (result.iconPosition) iconPosition = result.iconPosition; });
 chrome.storage.onChanged.addListener((changes) => { if (changes.iconPosition) iconPosition = changes.iconPosition.newValue; });
 
-function createHoverIcon() {
+function createPersistentIcon(img) {
+    if (iconMap.has(img)) return iconMap.get(img);
+
     const icon = document.createElement('div');
-    icon.id = 'flip-the-shell-icon';
+    icon.className = 'flip-the-shell-persistent-icon';
     icon.style.cssText = `
-        position: absolute; width: 32px; height: 32px; background-color: white;
+        position: absolute; width: 28px; height: 28px; background-color: white;
         background-image: url(${chrome.runtime.getURL('icons/view_icon.png')});
         background-size: 70%; background-position: center; background-repeat: no-repeat;
-        border-radius: 50%; cursor: pointer; z-index: 2147483647; display: none;
+        border-radius: 50%; cursor: pointer; z-index: 2147483647;
         box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 2px solid #5d4037;
         transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        pointer-events: auto;
     `;
-    icon.onclick = (e) => { e.stopPropagation(); if (currentImg) decodeImage(currentImg); };
+    
+    icon.onclick = (e) => { 
+        e.preventDefault();
+        e.stopPropagation(); 
+        decodeImage(img); 
+    };
+
+    // Update position periodically to handle layout changes
+    const updatePos = () => {
+        if (!img.isConnected) {
+            icon.remove();
+            return;
+        }
+        const rect = img.getBoundingClientRect();
+        if (rect.width === 0) {
+            icon.style.display = 'none';
+            return;
+        }
+        icon.style.display = 'block';
+        const iconSize = 28; let left, top; const margin = 5;
+        switch(iconPosition) {
+            case 'top-left': left = rect.left + margin; top = rect.top + margin; break;
+            case 'top-right': left = rect.right - iconSize - margin; top = rect.top + margin; break;
+            case 'bottom-left': left = rect.left + margin; top = rect.bottom - iconSize - margin; break;
+            case 'bottom-right': left = rect.right - iconSize - margin; top = rect.bottom - iconSize - margin; break;
+            default: left = rect.left + rect.width/2 - iconSize/2; top = rect.top + rect.height/2 - iconSize/2;
+        }
+        icon.style.left = (window.scrollX + left) + 'px';
+        icon.style.top = (window.scrollY + top) + 'px';
+    };
+
     document.body.appendChild(icon);
+    iconMap.set(img, icon);
+    
+    // Immediate and periodic position sync
+    updatePos();
+    const interval = setInterval(updatePos, 1000);
+    
+    // Clean up if image is removed
+    const observer = new MutationObserver(() => {
+        if (!document.body.contains(img)) {
+            icon.remove();
+            clearInterval(interval);
+            observer.disconnect();
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     return icon;
 }
 
@@ -35,7 +83,6 @@ async function fetchPixels(img) {
         ctx.drawImage(img, 0, 0);
         return ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     } catch (e) {
-        // High-privilege fetch for extension bypassing CORS
         const resp = await fetch(img.src);
         const blob = await resp.blob();
         const bitmap = await createImageBitmap(blob);
@@ -48,17 +95,16 @@ async function fetchPixels(img) {
 }
 
 async function checkShellSignature(img) {
-    if (img.naturalWidth < 50) return null;
+    if (img.naturalWidth < 30) return null;
     if (shellCache.has(img)) return shellCache.get(img);
 
     try {
         const pixels = await fetchPixels(img);
         const width = img.naturalWidth;
         const height = img.naturalHeight;
-        const skipW = Math.floor(width * SKIP_W_RATIO);
-        const skipH = Math.floor(height * SKIP_H_RATIO);
+        const skipW = width < 150 ? 0 : Math.floor(width * SKIP_W_RATIO);
+        const skipH = height < 150 ? 0 : Math.floor(height * SKIP_H_RATIO);
 
-        // Try all possible bit-depths (k=2, 4, 8) to find SNAIL signature
         for (let k of [4, 2, 8]) {
             const divisor = Math.pow(2, k);
             let bits = [];
@@ -66,7 +112,6 @@ async function checkShellSignature(img) {
                 for (let x = 0; x < width; x++) {
                     if (x < skipW && y < skipH) continue;
                     if (x === 0 && y === 0) continue;
-                    
                     const idx = (y * width + x) * 4;
                     for (let c = 0; c < 3; c++) {
                         const val = pixels[idx + c] % divisor;
@@ -76,7 +121,7 @@ async function checkShellSignature(img) {
                         }
                     }
                 }
-                if (y > 200 && bits.length === 0) break; // Efficiency
+                if (y > 200 && bits.length === 0) break;
             }
 
             if (bits.length >= 72) {
@@ -98,35 +143,37 @@ async function checkShellSignature(img) {
     } catch (e) { return null; }
 }
 
-document.addEventListener('mousemove', (e) => {
-    if (window.shellHoverTimer) return;
-    window.shellHoverTimer = setTimeout(() => {
-        window.shellHoverTimer = null;
-        const elements = document.elementsFromPoint(e.clientX, e.clientY);
-        const img = elements.find(el => el.tagName === 'IMG');
-        
-        if (img && img.naturalWidth > 30) { // Detection for small RunningHub thumbnails
+function scanImages() {
+    const images = document.querySelectorAll('img:not(.history-icon)');
+    images.forEach(img => {
+        if (img.naturalWidth > 30 && !iconMap.has(img)) {
             checkShellSignature(img).then(data => {
                 if (data && data.isShell) {
-                    if (!hoverIcon) hoverIcon = createHoverIcon();
-                    currentImg = img;
-                    const rect = img.getBoundingClientRect();
-                    const iconSize = 32; let left, top; const margin = 5; // Reduced margin for small images
-                    switch(iconPosition) {
-                        case 'top-left': left = rect.left + margin; top = rect.top + margin; break;
-                        case 'top-right': left = rect.right - iconSize - margin; top = rect.top + margin; break;
-                        case 'bottom-left': left = rect.left + margin; top = rect.bottom - iconSize - margin; break;
-                        case 'bottom-right': left = rect.right - iconSize - margin; top = rect.bottom - iconSize - margin; break;
-                        default: left = rect.left + rect.width/2 - iconSize/2; top = rect.top + rect.height/2 - iconSize/2;
-                    }
-                    hoverIcon.style.left = (window.scrollX + left) + 'px';
-                    hoverIcon.style.top = (window.scrollY + top) + 'px';
-                    hoverIcon.style.display = 'block';
-                } else if (hoverIcon && !elements.includes(hoverIcon)) hoverIcon.style.display = 'none';
+                    createPersistentIcon(img);
+                }
             });
-        } else if (hoverIcon && !elements.includes(hoverIcon)) hoverIcon.style.display = 'none';
-    }, 100);
-}, true);
+        }
+    });
+}
+
+// Auto-scan on load and periodically
+if (document.readyState === 'complete') scanImages();
+else window.addEventListener('load', scanImages);
+
+setInterval(scanImages, 3000);
+
+// Use MutationObserver to catch dynamic updates in RunningHub Task List
+const pageObserver = new MutationObserver((mutations) => {
+    let shouldScan = false;
+    for (const mutation of mutations) {
+        if (mutation.addedNodes.length > 0) {
+            shouldScan = true;
+            break;
+        }
+    }
+    if (shouldScan) scanImages();
+});
+pageObserver.observe(document.body, { childList: true, subtree: true });
 
 async function decodeImage(img) {
     const cached = shellCache.get(img);
@@ -134,8 +181,8 @@ async function decodeImage(img) {
     const { k, pixels } = cached;
     const width = img.naturalWidth;
     const height = img.naturalHeight;
-    const skipW = Math.floor(width * SKIP_W_RATIO);
-    const skipH = Math.floor(height * SKIP_H_RATIO);
+    const skipW = width < 150 ? 0 : Math.floor(width * SKIP_W_RATIO);
+    const skipH = height < 150 ? 0 : Math.floor(height * SKIP_H_RATIO);
     const divisor = Math.pow(2, k);
     
     try {
