@@ -1,4 +1,4 @@
-// Flip the Shell Extension v2.9 - Stable Mouseover Detection
+// Flip the Shell Extension v3.1 - Enhanced Visibility and Bug Fixes
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -14,13 +14,15 @@ function createHoverIcon() {
     const icon = document.createElement('div');
     icon.id = 'flip-the-shell-icon';
     icon.style.cssText = `
-        position: absolute; width: 32px; height: 32px; background-color: white;
+        position: absolute; width: 42px; height: 42px; background-color: white;
         background-image: url(${chrome.runtime.getURL('icons/view_icon.png')});
-        background-size: 70%; background-position: center; background-repeat: no-repeat;
+        background-size: 75%; background-position: center; background-repeat: no-repeat;
         border-radius: 50%; cursor: pointer; z-index: 2147483647; display: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 2px solid #5d4037;
-        transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.5); border: 3px solid #5d4037;
+        transition: transform 0.1s ease-out; pointer-events: auto;
     `;
+    icon.onmouseover = () => { icon.style.transform = 'scale(1.15)'; };
+    icon.onmouseout = () => { icon.style.transform = 'scale(1)'; };
     icon.onclick = (e) => { e.stopPropagation(); if (currentImg) decodeImage(currentImg); };
     document.body.appendChild(icon);
     return icon;
@@ -47,7 +49,7 @@ async function fetchPixels(img) {
 }
 
 async function checkShellSignature(img) {
-    if (img.naturalWidth < 30) return null; // Keep the RunningHub thumbnail support
+    if (img.naturalWidth < 30) return null;
     if (shellCache.has(img)) return shellCache.get(img);
 
     try {
@@ -95,20 +97,19 @@ async function checkShellSignature(img) {
     } catch (e) { return null; }
 }
 
+// Fast mouse tracking to handle visibility changes instantly
 document.addEventListener('mousemove', (e) => {
-    if (window.shellHoverTimer) return;
-    window.shellHoverTimer = setTimeout(() => {
-        window.shellHoverTimer = null;
-        const elements = document.elementsFromPoint(e.clientX, e.clientY);
-        const img = elements.find(el => el.tagName === 'IMG');
-        
-        if (img && img.naturalWidth > 30) {
+    const elements = document.elementsFromPoint(e.clientX, e.clientY);
+    const img = elements.find(el => el.tagName === 'IMG' && el.id !== 'flip-the-shell-icon');
+    
+    if (img) {
+        if (img.naturalWidth > 30) {
             checkShellSignature(img).then(data => {
                 if (data && data.isShell) {
                     if (!hoverIcon) hoverIcon = createHoverIcon();
                     currentImg = img;
                     const rect = img.getBoundingClientRect();
-                    const iconSize = 32; let left, top; const margin = 5;
+                    const iconSize = 42; let left, top; const margin = 8;
                     switch(iconPosition) {
                         case 'top-left': left = rect.left + margin; top = rect.top + margin; break;
                         case 'top-right': left = rect.right - iconSize - margin; top = rect.top + margin; break;
@@ -119,11 +120,22 @@ document.addEventListener('mousemove', (e) => {
                     hoverIcon.style.left = (window.scrollX + left) + 'px';
                     hoverIcon.style.top = (window.scrollY + top) + 'px';
                     hoverIcon.style.display = 'block';
-                } else if (hoverIcon && !elements.includes(hoverIcon)) hoverIcon.style.display = 'none';
+                } else if (hoverIcon && !elements.includes(hoverIcon)) {
+                    hoverIcon.style.display = 'none';
+                }
             });
-        } else if (hoverIcon && !elements.includes(hoverIcon)) hoverIcon.style.display = 'none';
-    }, 100);
+        } else if (hoverIcon && !elements.includes(hoverIcon)) {
+            hoverIcon.style.display = 'none';
+        }
+    } else if (hoverIcon && !elements.includes(hoverIcon)) {
+        // If mouse is not over an image and not over the icon itself, hide it instantly
+        hoverIcon.style.display = 'none';
+    }
 }, true);
+
+// Handle cases where images might disappear or move (e.g. modals closing)
+window.addEventListener('scroll', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
+window.addEventListener('resize', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
 
 async function decodeImage(img) {
     const cached = shellCache.get(img);
