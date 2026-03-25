@@ -1,7 +1,7 @@
-// Flip the Shell Extension v2.9 - RunningHub Auto-Detection Fix
-let iconPosition = 'center';
+// Flip the Shell Extension v3.0 - RunningHub Integration Pro
+let iconPosition = 'top-right'; // Default to top-right to match ellipsis
 const shellCache = new WeakMap();
-const iconMap = new WeakMap(); // Tracks if an icon is already displayed for an image
+const iconMap = new WeakMap();
 
 const SKIP_W_RATIO = 0.40;
 const SKIP_H_RATIO = 0.08;
@@ -13,42 +13,46 @@ function createPersistentIcon(img) {
     if (iconMap.has(img)) return iconMap.get(img);
 
     const icon = document.createElement('div');
-    icon.className = 'flip-the-shell-persistent-icon';
+    icon.className = 'flip-the-shell-action-btn';
+    // Style to match RunningHub's UI feel (glassmorphism/dark mode friendly)
     icon.style.cssText = `
-        position: absolute; width: 28px; height: 28px; background-color: white;
+        position: absolute; width: 30px; height: 30px; 
+        background-color: rgba(255, 255, 255, 0.2);
         background-image: url(${chrome.runtime.getURL('icons/view_icon.png')});
-        background-size: 70%; background-position: center; background-repeat: no-repeat;
-        border-radius: 50%; cursor: pointer; z-index: 2147483647;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 2px solid #5d4037;
-        transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        pointer-events: auto;
+        background-size: 60%; background-position: center; background-repeat: no-repeat;
+        border-radius: 6px; cursor: pointer; z-index: 2147483640;
+        backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3);
+        transition: all 0.2s ease;
+        display: flex; align-items: center; justify-content: center;
     `;
     
+    icon.onmouseover = () => { icon.style.backgroundColor = 'rgba(255, 255, 255, 0.4)'; icon.style.transform = 'scale(1.1)'; };
+    icon.onmouseout = () => { icon.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; icon.style.transform = 'scale(1)'; };
+
     icon.onclick = (e) => { 
-        e.preventDefault();
-        e.stopPropagation(); 
+        e.preventDefault(); e.stopPropagation(); 
         decodeImage(img); 
     };
 
-    // Update position periodically to handle layout changes
     const updatePos = () => {
-        if (!img.isConnected) {
-            icon.remove();
-            return;
+        if (!img.isConnected || !document.body.contains(img)) {
+            icon.remove(); return;
         }
         const rect = img.getBoundingClientRect();
-        if (rect.width === 0) {
-            icon.style.display = 'none';
-            return;
+        if (rect.width === 0 || rect.height === 0) {
+            icon.style.display = 'none'; return;
         }
-        icon.style.display = 'block';
-        const iconSize = 28; let left, top; const margin = 5;
+        icon.style.display = 'flex';
+        const iconSize = 30; let left, top; const margin = 8;
+        
+        // Position relative to the viewport + scroll
         switch(iconPosition) {
             case 'top-left': left = rect.left + margin; top = rect.top + margin; break;
-            case 'top-right': left = rect.right - iconSize - margin; top = rect.top + margin; break;
             case 'bottom-left': left = rect.left + margin; top = rect.bottom - iconSize - margin; break;
             case 'bottom-right': left = rect.right - iconSize - margin; top = rect.bottom - iconSize - margin; break;
-            default: left = rect.left + rect.width/2 - iconSize/2; top = rect.top + rect.height/2 - iconSize/2;
+            case 'center': left = rect.left + rect.width/2 - iconSize/2; top = rect.top + rect.height/2 - iconSize/2; break;
+            default: // top-right (match ellipsis position)
+                left = rect.right - iconSize - margin; top = rect.top + margin;
         }
         icon.style.left = (window.scrollX + left) + 'px';
         icon.style.top = (window.scrollY + top) + 'px';
@@ -57,20 +61,10 @@ function createPersistentIcon(img) {
     document.body.appendChild(icon);
     iconMap.set(img, icon);
     
-    // Immediate and periodic position sync
     updatePos();
-    const interval = setInterval(updatePos, 1000);
+    // High frequency update for smoother scroll/hover response
+    const interval = setInterval(updatePos, 200);
     
-    // Clean up if image is removed
-    const observer = new MutationObserver(() => {
-        if (!document.body.contains(img)) {
-            icon.remove();
-            clearInterval(interval);
-            observer.disconnect();
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
     return icon;
 }
 
@@ -144,7 +138,7 @@ async function checkShellSignature(img) {
 }
 
 function scanImages() {
-    const images = document.querySelectorAll('img:not(.history-icon)');
+    const images = document.querySelectorAll('img:not(.history-icon):not([src^="data:image/svg+xml"])');
     images.forEach(img => {
         if (img.naturalWidth > 30 && !iconMap.has(img)) {
             checkShellSignature(img).then(data => {
@@ -156,24 +150,22 @@ function scanImages() {
     });
 }
 
-// Auto-scan on load and periodically
-if (document.readyState === 'complete') scanImages();
-else window.addEventListener('load', scanImages);
-
-setInterval(scanImages, 3000);
-
-// Use MutationObserver to catch dynamic updates in RunningHub Task List
+// Global observer for dynamic content
 const pageObserver = new MutationObserver((mutations) => {
     let shouldScan = false;
     for (const mutation of mutations) {
         if (mutation.addedNodes.length > 0) {
-            shouldScan = true;
-            break;
+            shouldScan = true; break;
         }
     }
     if (shouldScan) scanImages();
 });
 pageObserver.observe(document.body, { childList: true, subtree: true });
+
+// Initial scan and regular polling
+setInterval(scanImages, 2000);
+if (document.readyState === 'complete') scanImages();
+else window.addEventListener('load', scanImages);
 
 async function decodeImage(img) {
     const cached = shellCache.get(img);
