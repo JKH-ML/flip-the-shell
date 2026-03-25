@@ -72,7 +72,11 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📜 Version History
 
-### [v3.9] - 2026-03-26 (Current)
+### [v4.0] - 2026-03-26 (Current)
+- **Zero-Latency UI:** Implemented a Visibility Watchdog that removes lingering icons within 100ms of an image disappearing.
+- **Enhanced Reliability:** Added deep-check for image connectivity and visibility to prevent UI glitches.
+
+### [v3.9] - 2026-03-26
 - **UI Refinement:** Replaced text-based download buttons with sleek SVG icons.
 - **Improved Aesthetics:** Added glassmorphism effects and hover animations to the action buttons.
 

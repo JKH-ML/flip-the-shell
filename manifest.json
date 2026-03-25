@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Flip the Shell",
-  "version": "3.8",
-  "description": "Professional steganography tool for RunningHub. Auto-highlights shell images and supports direct file export.",
+  "version": "4.0",
+  "description": "Professional steganography tool for RunningHub. Auto-highlights shell images and supports direct file export with zero-latency UI.",
   "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
   "host_permissions": ["<all_urls>"],
   "background": {
