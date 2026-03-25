@@ -2,6 +2,14 @@
 
 **Flip the Shell** is a powerful Chrome extension that detects and instantly extracts hidden data (images, videos, etc.) from **Shell Images** uploaded to the web.
 
+<div align="center">
+  <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/🚀%20Install%20on%20Chrome%20Web%20Store-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store">
+  </a>
+</div>
+
+---
+
 This tool is perfectly integrated with the [ComfyUI-SnailShell](https://github.com/JKH-ML/ComfyUI-SnailShell) custom node, allowing users to verify hidden content directly in the browser without any complex decoding processes.
 
 ## 🌟 Key Feature: SNAIL Steganography Integration
@@ -26,14 +34,6 @@ Use the [Demo Workflow (AVoid Censorship by Snail-Shell.json)](https://github.co
 
 ### 3. Reveal the Secret
 Click the icon to instantly reveal and play the original hidden image or video in high quality!
-
-## 🚀 Installation
-
-<div align="center">
-  <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar">
-    <img src="https://raw.githubusercontent.com/chrome-webstore/badge/main/static/images/en/chrome-web-store-badge-280x80.png" alt="Available in the Chrome Web Store" height="70">
-  </a>
-</div>
 
 ## 💻 Technical Details: The SNAIL Engine
 
@@ -62,7 +62,7 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📄 Policy & Caution
 
-- **Privacy Policy:** Detailed information can be found at [https://jkh-ml.github.io/flip-the-shell/](https://jkh-ml.github.io/flip-the-shell/) (Required for Chrome Web Store).
+- **Privacy Policy:** Detailed information can be found at [https://jkh-ml.github.io/flip-the-shell/](https://jkh-ml.github.io/flip-the-shell/)
 - **Disclaimer:** This tool is intended for security research and creative data sharing. Users are responsible for ensuring their use of this tool complies with all applicable laws and regulations. Do not use this tool to infringe upon the rights of others.
 
 ---
