@@ -1,4 +1,4 @@
-// Flip the Shell Extension v3.6 - Encryption Support
+// Flip the Shell Extension v3.7 - Critical Encryption Fix
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -199,44 +199,49 @@ async function decodeImage(img) {
         
         const packedAll = pack(bits);
         const headerLen = new DataView(packedAll.buffer).getUint32(0);
-        const header = packedAll.slice(4, 4 + headerLen);
+        const fullPayload = packedAll.slice(4, 4 + headerLen);
+        
         let idx = 5; // Skip SNAIL
-        const hasPwd = header[idx++] === 1;
+        const hasPwd = fullPayload[idx++] === 1;
         
         if (hasPwd) {
             askForPassword(img, async (pwd) => {
-                await proceedDecode(header, packedAll, idx, pwd);
+                const decryptedPayload = await decryptBuffer(fullPayload.slice(idx), pwd);
+                proceedDecode(decryptedPayload);
             });
             return;
         }
         
-        await proceedDecode(header, packedAll, idx, null);
+        proceedDecode(fullPayload.slice(idx));
     } catch (e) { alert("Failed to decode snail."); }
 }
 
-async function proceedDecode(header, packedAll, idx, password) {
-    const extLen = header[idx++];
-    const ext = new TextDecoder().decode(header.slice(idx, idx + extLen));
-    idx += extLen;
-    const dataLen = new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(idx);
-    idx += 4;
+async function decryptBuffer(encryptedData, password) {
+    const msgUint8 = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const key = new Uint8Array(hashBuffer);
     
-    let rawData = header.slice(idx, idx + dataLen);
-    
-    if (password) {
-        // SHA-256 XOR Decryption
-        const msgUint8 = new TextEncoder().encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const key = new Uint8Array(hashBuffer);
-        
-        const decrypted = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; i++) {
-            decrypted[i] = rawData[i] ^ key[i % key.length];
-        }
-        rawData = decrypted;
+    const decrypted = new Uint8Array(encryptedData.length);
+    for (let i = 0; i < encryptedData.length; i++) {
+        decrypted[i] = encryptedData[i] ^ key[i % key.length];
     }
-    
-    showSnailOverlay(rawData, ext);
+    return decrypted;
+}
+
+function proceedDecode(decryptedBuffer) {
+    try {
+        let idx = 0;
+        const extLen = decryptedBuffer[idx++];
+        const ext = new TextDecoder().decode(decryptedBuffer.slice(idx, idx + extLen));
+        idx += extLen;
+        const dataLen = new DataView(decryptedBuffer.buffer, decryptedBuffer.byteOffset, decryptedBuffer.byteLength).getUint32(idx);
+        idx += 4;
+        
+        const rawData = decryptedBuffer.slice(idx, idx + dataLen);
+        showSnailOverlay(rawData, ext);
+    } catch (e) {
+        alert("Failed to parse decrypted data. Wrong password?");
+    }
 }
 
 function askForPassword(img, callback) {
@@ -245,10 +250,12 @@ function askForPassword(img, callback) {
     
     const box = document.createElement('div');
     box.className = 'shell-pwd-box';
+    // Use text input with security masking to avoid Chrome's save password prompt
     box.innerHTML = `
         <h3 style="margin:0 0 10px 0;color:#111;font-family:sans-serif;">🔒 Protected Shell</h3>
-        <p style="font-size:13px;color:#555;margin-bottom:20px;font-family:sans-serif;">This content is encrypted with a password.</p>
-        <input type="password" class="shell-pwd-input" placeholder="Enter Password" id="shell-pwd-field">
+        <p style="font-size:13px;color:#555;margin-bottom:20px;font-family:sans-serif;">This content is encrypted. Enter password to unlock.</p>
+        <input type="text" class="shell-pwd-input" placeholder="Enter Password" id="shell-pwd-field" 
+               style="-webkit-text-security: disc; autocomplete: off;" spellcheck="false">
         <div style="display:flex;gap:10px;">
             <button id="shell-pwd-cancel" class="shell-dl-btn" style="background:#eee;color:#333;flex:1;">Cancel</button>
             <button id="shell-pwd-btn" class="shell-dl-btn" style="flex:2;">Unlock & Reveal</button>
@@ -306,16 +313,15 @@ function showSnailOverlay(data, ext) {
             const decodedText = new TextDecoder().decode(data);
             textBox.innerText = decodedText;
         } catch (e) {
-            textBox.innerText = "Error: Could not decode data. Wrong password?";
+            textBox.innerText = "Error: Could not decode data. Possible wrong password.";
         }
         textBox.style.cssText = `padding: 30px; background: white; border-radius: 12px; color: #333; font-family: monospace; font-size: 16px; white-space: pre-wrap; max-width: 600px; overflow-y: auto;`;
         container.appendChild(textBox);
     }
     
-    // Download Button
     const dlBtn = document.createElement('button');
     dlBtn.className = 'shell-dl-btn';
-    dlBtn.innerText = `💾 Download 원본 ${ext.toUpperCase()}`;
+    dlBtn.innerText = `💾 Download Original ${ext.toUpperCase()}`;
     dlBtn.onclick = () => {
         const a = document.createElement('a');
         a.href = url;
