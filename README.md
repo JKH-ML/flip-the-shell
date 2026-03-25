@@ -31,7 +31,7 @@ Click the icon to instantly reveal and play the original hidden image or video i
 
 <div align="center">
   <a href="https://chromewebstore.google.com/detail/flip-the-shell/opplmeompodbeojbbccnllpbjhcbnnbn?hl=ko&utm_source=ext_sidebar">
-    <img src="https://storage.googleapis.com/chrome-gcm-v1.appspot.com/badges/en/chrome_web_store-static.png" alt="Available in the Chrome Web Store" height="70">
+    <img src="https://raw.githubusercontent.com/chrome-webstore/badge/main/static/images/en/chrome-web-store-badge-280x80.png" alt="Available in the Chrome Web Store" height="70">
   </a>
 </div>
 
