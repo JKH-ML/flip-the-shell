@@ -72,7 +72,11 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📜 Version History
 
-### [v3.8] - 2026-03-26 (Current)
+### [v3.9] - 2026-03-26 (Current)
+- **UI Refinement:** Replaced text-based download buttons with sleek SVG icons.
+- **Improved Aesthetics:** Added glassmorphism effects and hover animations to the action buttons.
+
+### [v3.8] - 2026-03-26
 - **Simplified:** Removed password encryption support for better stability and simpler workflow.
 - **Direct Download:** Added functionality to export extracted files directly.
 - **UI Enhancements:** Increased view icon size and improved response time.

@@ -11,39 +11,32 @@
   transition: all 0.3s ease !important;
 }
 
-/* Download Button Styling in Overlay */
-.shell-dl-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #87d530;
-  color: #000;
-  font-weight: bold;
-  border-radius: 8px;
+/* New Icon-based Download Button Styling */
+.shell-icon-dl-btn {
+  margin-top: 25px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border: none;
-  font-size: 14px;
-  transition: transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.shell-dl-btn:hover {
-  transform: scale(1.05);
-  background: #76bc29;
+.shell-icon-dl-btn:hover {
+  background: #87d530;
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 0 20px rgba(135, 213, 48, 0.4);
 }
 
-/* Password UI Styling */
-.shell-pwd-box {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+.shell-icon-dl-btn:hover img {
+  filter: invert(0) !important; /* Switch to black on green background */
 }
 
-.shell-pwd-input {
-  width: 100%;
-  padding: 10px;
-  margin: 15px 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
+.shell-icon-dl-btn:active {
+  transform: scale(0.95);
 }

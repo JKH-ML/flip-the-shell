@@ -1,4 +1,4 @@
-// Flip the Shell Extension v3.8 - Simplified (Removed Password Support)
+// Flip the Shell Extension v3.9 - Refined UI with Icon Buttons
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -7,6 +7,8 @@ const shellCache = new WeakMap();
 
 const SKIP_W_RATIO = 0.40;
 const SKIP_H_RATIO = 0.08;
+
+const DL_ICON_SVG = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWRvd25sb2FkLWljb24gbHVjaWRlLWRvd25sb2FkIj48cGF0aCBkPSJNMTIgMTVWMyIvPjxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00Ii8+PHBhdGggZD0ibTcgMTAgNSA1IDUtNSIvPjwvc3ZnPg==`;
 
 // Load saved settings
 chrome.storage.local.get(['iconPosition', 'playbackSpeed'], (result) => { 
@@ -234,7 +236,7 @@ function showSnailOverlay(data, ext) {
     overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(10px);`;
     
     const container = document.createElement('div');
-    container.style.cssText = "max-width: 90%; max-height: 80%; display: flex; flex-direction: column; align-items: center; cursor: default;";
+    container.style.cssText = "max-width: 90%; max-height: 80%; display: flex; flex-direction: column; align-items: center; cursor: default; position: relative;";
     
     let blobType = `image/${ext.toLowerCase()}`;
     if (ext.toLowerCase() === 'mp4') blobType = 'video/mp4';
@@ -259,10 +261,13 @@ function showSnailOverlay(data, ext) {
         container.appendChild(textBox);
     }
     
-    const dlBtn = document.createElement('button');
-    dlBtn.className = 'shell-dl-btn';
-    dlBtn.innerText = `💾 Download Original ${ext.toUpperCase()}`;
-    dlBtn.onclick = () => {
+    // Icon-based Download Button
+    const dlBtn = document.createElement('div');
+    dlBtn.className = 'shell-icon-dl-btn';
+    dlBtn.innerHTML = `<img src="${DL_ICON_SVG}" style="width:24px;height:24px;filter:invert(1);">`;
+    dlBtn.title = `Download Original ${ext.toUpperCase()}`;
+    dlBtn.onclick = (e) => {
+        e.stopPropagation();
         const a = document.createElement('a');
         a.href = url;
         a.download = `revealed_shell_${Date.now()}.${ext.toLowerCase()}`;
