@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Flip the Shell",
-  "version": "2.9",
-  "description": "Universal Reveal v2.9: Ultimate detection for all shell types with CORS bypass and k-auto-scan.",
+  "version": "3.1",
+  "description": "The ultimate steganography tool for RunningHub. Detects and extracts hidden images or videos from 'Shell Images' in real-time.",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [

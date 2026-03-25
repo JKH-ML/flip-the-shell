@@ -67,6 +67,27 @@ Once the user clicks the icon, the full bitstream is extracted:
   - **Videos:** Streamed through a `video` element with hardware acceleration.
   - **Text:** Decoded using `TextDecoder` and shown in a pre-formatted box.
 
+## 📜 Version History
+
+### [v3.1] - 2026-03-26 (Current)
+- **Enhanced UI:** Increased view icon size to 42px for better visibility.
+- **Bug Fix:** Resolved the lingering icon issue when images or modals are closed.
+- **Instant Response:** Upgraded mouse tracking for immediate icon appearance/disappearance.
+- **Improved Detection:** Lowered threshold to 30px to support RunningHub task list thumbnails.
+
+### [v3.0] - 2026-03-25
+- **RunningHub Optimization:** Fully optimized for RunningHub's dashboard and task list.
+- **SNAIL v2 Protocol:** Support for variable bit-depth ($k \in \{2, 4, 8\}$) extraction.
+- **Video Support:** Added real-time MP4 video extraction and streaming playback.
+
+### [v2.0] - 2026-03-20
+- **Manifest V3 Migration:** Complete rewrite for Google's latest extension standard.
+- **CORS Bypass:** Implemented high-privilege fetch for cross-origin image analysis.
+- **Overlay UI:** Introduced a clean glassmorphism-style result overlay.
+
+### [v1.0] - 2026-03-10
+- **Initial Release:** Basic steganography detection and PNG extraction.
+
 ## 📄 Policy & Caution
 
 - **Privacy Policy:** Detailed information can be found at <a href="https://jkh-ml.github.io/flip-the-shell/" target="_blank" rel="noopener noreferrer">https://jkh-ml.github.io/flip-the-shell/</a>
