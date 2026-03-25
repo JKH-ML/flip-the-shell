@@ -42,7 +42,7 @@ The core of this system is the **SNAIL Protocol**, a custom steganography implem
 ### 1. Data Hiding (The Encoder)
 The `ComfyUI-SnailShell` node hides binary data within the pixel values of a carrier image (the "Shell").
 - **Bit-Depth Steganography (k):** Instead of simple LSB (Least Significant Bit), it uses a variable bit-depth $k \in \{2, 4, 8\}$. This allows for different levels of capacity vs. invisibility.
-- **Pixel Modulation:** For each RGB channel of a pixel, the bottom $k$ bits are replaced with the hidden data's bits using the formula: $P_{new} = (P_{old} - (P_{old} \pmod{2^k})) + \text{data\_bits}$.
+- **Pixel Modulation:** For each RGB channel of a pixel, the bottom $k$ bits are replaced with the hidden data's bits using the formula: $P_{\text{new}} = (P_{\text{old}} - (P_{\text{old}} \pmod{2^k})) + \text{bits}$.
 - **SNAIL Signature:** A 40-bit unique signature (`SNAIL`) is embedded at a specific offset. This signature allows the extension to distinguish between normal images and valid "Shell" images.
 
 ### 2. Real-time Detection (The Scanner)
