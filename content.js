@@ -1,4 +1,4 @@
-// Flip the Shell Extension v3.9 - Refined UI with Icon Buttons
+// Flip the Shell Extension v4.0 - Zero-Latency Visibility Fix
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -36,6 +36,16 @@ function autoHighlightShells() {
     });
 }
 setInterval(autoHighlightShells, 3000);
+
+// Visibility Watchdog: Check every 100ms if currentImg is still valid
+setInterval(() => {
+    if (hoverIcon && hoverIcon.style.display === 'block') {
+        if (!currentImg || !currentImg.isConnected || currentImg.getBoundingClientRect().width === 0) {
+            hoverIcon.style.display = 'none';
+            currentImg = null;
+        }
+    }
+}, 100);
 
 // Context Menu Message Listener
 chrome.runtime.onMessage.addListener((request) => {
@@ -166,8 +176,11 @@ document.addEventListener('mousemove', (e) => {
     }
 }, true);
 
-window.addEventListener('scroll', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
-window.addEventListener('resize', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
+// Fast hide on any potential trigger
+const fastHide = () => { if (hoverIcon) hoverIcon.style.display = 'none'; };
+window.addEventListener('scroll', fastHide, true);
+window.addEventListener('resize', fastHide, true);
+document.addEventListener('click', (e) => { if (hoverIcon && e.target !== hoverIcon) fastHide(); }, true);
 
 async function decodeImage(img) {
     const cached = shellCache.get(img);
@@ -261,7 +274,6 @@ function showSnailOverlay(data, ext) {
         container.appendChild(textBox);
     }
     
-    // Icon-based Download Button
     const dlBtn = document.createElement('div');
     dlBtn.className = 'shell-icon-dl-btn';
     dlBtn.innerHTML = `<img src="${DL_ICON_SVG}" style="width:24px;height:24px;filter:invert(1);">`;
