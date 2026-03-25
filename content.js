@@ -1,4 +1,4 @@
-// Flip the Shell Extension v3.7 - Critical Encryption Fix
+// Flip the Shell Extension v3.8 - Simplified (Removed Password Support)
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -201,31 +201,16 @@ async function decodeImage(img) {
         const headerLen = new DataView(packedAll.buffer).getUint32(0);
         const fullPayload = packedAll.slice(4, 4 + headerLen);
         
-        let idx = 5; // Skip SNAIL
+        let idx = 5; // Skip SNAIL signature
         const hasPwd = fullPayload[idx++] === 1;
         
         if (hasPwd) {
-            askForPassword(img, async (pwd) => {
-                const decryptedPayload = await decryptBuffer(fullPayload.slice(idx), pwd);
-                proceedDecode(decryptedPayload);
-            });
+            alert("This shell is encrypted. Password support has been removed in this version.");
             return;
         }
         
         proceedDecode(fullPayload.slice(idx));
     } catch (e) { alert("Failed to decode snail."); }
-}
-
-async function decryptBuffer(encryptedData, password) {
-    const msgUint8 = new TextEncoder().encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const key = new Uint8Array(hashBuffer);
-    
-    const decrypted = new Uint8Array(encryptedData.length);
-    for (let i = 0; i < encryptedData.length; i++) {
-        decrypted[i] = encryptedData[i] ^ key[i % key.length];
-    }
-    return decrypted;
 }
 
 function proceedDecode(decryptedBuffer) {
@@ -240,48 +225,8 @@ function proceedDecode(decryptedBuffer) {
         const rawData = decryptedBuffer.slice(idx, idx + dataLen);
         showSnailOverlay(rawData, ext);
     } catch (e) {
-        alert("Failed to parse decrypted data. Wrong password?");
+        alert("Failed to parse snail data.");
     }
-}
-
-function askForPassword(img, callback) {
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:2147483647;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);`;
-    
-    const box = document.createElement('div');
-    box.className = 'shell-pwd-box';
-    // Use text input with security masking to avoid Chrome's save password prompt
-    box.innerHTML = `
-        <h3 style="margin:0 0 10px 0;color:#111;font-family:sans-serif;">🔒 Protected Shell</h3>
-        <p style="font-size:13px;color:#555;margin-bottom:20px;font-family:sans-serif;">This content is encrypted. Enter password to unlock.</p>
-        <input type="text" class="shell-pwd-input" placeholder="Enter Password" id="shell-pwd-field" 
-               style="-webkit-text-security: disc; autocomplete: off;" spellcheck="false">
-        <div style="display:flex;gap:10px;">
-            <button id="shell-pwd-cancel" class="shell-dl-btn" style="background:#eee;color:#333;flex:1;">Cancel</button>
-            <button id="shell-pwd-btn" class="shell-dl-btn" style="flex:2;">Unlock & Reveal</button>
-        </div>
-    `;
-    
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-    
-    const input = document.getElementById('shell-pwd-field');
-    input.focus();
-    
-    const submit = () => {
-        if (input.value) {
-            const pwd = input.value;
-            document.body.removeChild(overlay);
-            callback(pwd);
-        } else {
-            input.style.borderColor = 'red';
-        }
-    };
-    
-    document.getElementById('shell-pwd-btn').onclick = submit;
-    document.getElementById('shell-pwd-cancel').onclick = () => document.body.removeChild(overlay);
-    input.onkeydown = (e) => { if (e.key === 'Enter') submit(); };
-    overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
 }
 
 function showSnailOverlay(data, ext) {
@@ -309,12 +254,7 @@ function showSnailOverlay(data, ext) {
         container.appendChild(video);
     } else {
         const textBox = document.createElement('div');
-        try {
-            const decodedText = new TextDecoder().decode(data);
-            textBox.innerText = decodedText;
-        } catch (e) {
-            textBox.innerText = "Error: Could not decode data. Possible wrong password.";
-        }
+        textBox.innerText = new TextDecoder().decode(data);
         textBox.style.cssText = `padding: 30px; background: white; border-radius: 12px; color: #333; font-family: monospace; font-size: 16px; white-space: pre-wrap; max-width: 600px; overflow-y: auto;`;
         container.appendChild(textBox);
     }

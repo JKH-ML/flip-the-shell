@@ -27,6 +27,9 @@ Beyond simple shell detection, it restores hidden data encrypted/compressed with
 - **SNAIL Signature Recognition:** Employs the `k-auto-scan` algorithm to find hidden data regardless of the bit-depth (k=2, 4, 8).
 - **Instant Extraction & Playback:** Displays hidden images in a popup and provides instant streaming for **MP4 videos**.
 - **CORS Bypass:** Utilizes extension privileges to analyze images even on sites with strict security policies.
+- **Visual Highlight:** Automatically highlights shell images with a neon pulse effect.
+- **Context Menu:** Decode any image directly via right-click menu.
+- **Direct Download:** Export extracted files instantly.
 
 ## 🛠 Usage (RunningHub Example)
 
@@ -69,11 +72,14 @@ Once the user clicks the icon, the full bitstream is extracted:
 
 ## 📜 Version History
 
-### [v3.1] - 2026-03-26 (Current)
-- **Enhanced UI:** Increased view icon size to 42px for better visibility.
-- **Bug Fix:** Resolved the lingering icon issue when images or modals are closed.
-- **Instant Response:** Upgraded mouse tracking for immediate icon appearance/disappearance.
-- **Improved Detection:** Lowered threshold to 30px to support RunningHub task list thumbnails.
+### [v3.8] - 2026-03-26 (Current)
+- **Simplified:** Removed password encryption support for better stability and simpler workflow.
+- **Direct Download:** Added functionality to export extracted files directly.
+- **UI Enhancements:** Increased view icon size and improved response time.
+
+### [v3.5] - 2026-03-26
+- **Visual Highlight:** Added auto-highlighting for shell images with neon effects.
+- **Context Menu:** Integrated right-click "Flip this Shell" menu.
 
 ### [v3.0] - 2026-03-25
 - **RunningHub Optimization:** Fully optimized for RunningHub's dashboard and task list.
@@ -83,7 +89,6 @@ Once the user clicks the icon, the full bitstream is extracted:
 ### [v2.0] - 2026-03-20
 - **Manifest V3 Migration:** Complete rewrite for Google's latest extension standard.
 - **CORS Bypass:** Implemented high-privilege fetch for cross-origin image analysis.
-- **Overlay UI:** Introduced a clean glassmorphism-style result overlay.
 
 ### [v1.0] - 2026-03-10
 - **Initial Release:** Basic steganography detection and PNG extraction.
