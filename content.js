@@ -1,4 +1,4 @@
-// Flip the Shell Extension v3.5 - Pro Integration
+// Flip the Shell Extension v3.6 - Encryption Support
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
@@ -204,38 +204,55 @@ async function decodeImage(img) {
         const hasPwd = header[idx++] === 1;
         
         if (hasPwd) {
-            askForPassword(img, (pwd) => {
-                // Here you would add the decryption logic (e.g. AES-GCM)
-                // For now, we continue to show the UI
-                proceedDecode(header, packedAll, idx);
+            askForPassword(img, async (pwd) => {
+                await proceedDecode(header, packedAll, idx, pwd);
             });
             return;
         }
         
-        proceedDecode(header, packedAll, idx);
+        await proceedDecode(header, packedAll, idx, null);
     } catch (e) { alert("Failed to decode snail."); }
 }
 
-function proceedDecode(header, packedAll, idx) {
+async function proceedDecode(header, packedAll, idx, password) {
     const extLen = header[idx++];
     const ext = new TextDecoder().decode(header.slice(idx, idx + extLen));
     idx += extLen;
     const dataLen = new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(idx);
     idx += 4;
-    showSnailOverlay(header.slice(idx, idx + dataLen), ext);
+    
+    let rawData = header.slice(idx, idx + dataLen);
+    
+    if (password) {
+        // SHA-256 XOR Decryption
+        const msgUint8 = new TextEncoder().encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const key = new Uint8Array(hashBuffer);
+        
+        const decrypted = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; i++) {
+            decrypted[i] = rawData[i] ^ key[i % key.length];
+        }
+        rawData = decrypted;
+    }
+    
+    showSnailOverlay(rawData, ext);
 }
 
 function askForPassword(img, callback) {
     const overlay = document.createElement('div');
-    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:2147483647;display:flex;align-items:center;justify-content:center;`;
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:2147483647;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);`;
     
     const box = document.createElement('div');
     box.className = 'shell-pwd-box';
     box.innerHTML = `
-        <h3 style="margin:0;color:#333;">🔒 Protected Shell</h3>
-        <p style="font-size:13px;color:#666;">This shell is encrypted. Please enter the password.</p>
-        <input type="password" class="shell-pwd-input" placeholder="Password" id="shell-pwd-field">
-        <button id="shell-pwd-btn" class="shell-dl-btn" style="margin-top:0;width:100%;">Unlock</button>
+        <h3 style="margin:0 0 10px 0;color:#111;font-family:sans-serif;">🔒 Protected Shell</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:20px;font-family:sans-serif;">This content is encrypted with a password.</p>
+        <input type="password" class="shell-pwd-input" placeholder="Enter Password" id="shell-pwd-field">
+        <div style="display:flex;gap:10px;">
+            <button id="shell-pwd-cancel" class="shell-dl-btn" style="background:#eee;color:#333;flex:1;">Cancel</button>
+            <button id="shell-pwd-btn" class="shell-dl-btn" style="flex:2;">Unlock & Reveal</button>
+        </div>
     `;
     
     overlay.appendChild(box);
@@ -246,12 +263,16 @@ function askForPassword(img, callback) {
     
     const submit = () => {
         if (input.value) {
+            const pwd = input.value;
             document.body.removeChild(overlay);
-            callback(input.value);
+            callback(pwd);
+        } else {
+            input.style.borderColor = 'red';
         }
     };
     
     document.getElementById('shell-pwd-btn').onclick = submit;
+    document.getElementById('shell-pwd-cancel').onclick = () => document.body.removeChild(overlay);
     input.onkeydown = (e) => { if (e.key === 'Enter') submit(); };
     overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
 }
@@ -281,7 +302,12 @@ function showSnailOverlay(data, ext) {
         container.appendChild(video);
     } else {
         const textBox = document.createElement('div');
-        textBox.innerText = new TextDecoder().decode(data);
+        try {
+            const decodedText = new TextDecoder().decode(data);
+            textBox.innerText = decodedText;
+        } catch (e) {
+            textBox.innerText = "Error: Could not decode data. Wrong password?";
+        }
         textBox.style.cssText = `padding: 30px; background: white; border-radius: 12px; color: #333; font-family: monospace; font-size: 16px; white-space: pre-wrap; max-width: 600px; overflow-y: auto;`;
         container.appendChild(textBox);
     }
