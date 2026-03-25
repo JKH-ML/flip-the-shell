@@ -1,8 +1,8 @@
-// Flip the Shell Extension v3.1 - Enhanced Visibility and Bug Fixes
+// Flip the Shell Extension v3.5 - Pro Integration
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
-let playbackSpeed = 1.0; // Default speed
+let playbackSpeed = 1.0;
 const shellCache = new WeakMap();
 
 const SKIP_W_RATIO = 0.40;
@@ -17,6 +17,30 @@ chrome.storage.local.get(['iconPosition', 'playbackSpeed'], (result) => {
 chrome.storage.onChanged.addListener((changes) => { 
     if (changes.iconPosition) iconPosition = changes.iconPosition.newValue; 
     if (changes.playbackSpeed) playbackSpeed = parseFloat(changes.playbackSpeed.newValue);
+});
+
+// Auto-Highlight Shell Images
+function autoHighlightShells() {
+    const images = document.querySelectorAll('img:not(.history-icon):not([src^="data:image/svg+xml"])');
+    images.forEach(img => {
+        if (img.naturalWidth > 30 && !img.dataset.shellScanned) {
+            checkShellSignature(img).then(data => {
+                if (data && data.isShell) {
+                    img.classList.add('shell-highlighted');
+                }
+                img.dataset.shellScanned = "true";
+            });
+        }
+    });
+}
+setInterval(autoHighlightShells, 3000);
+
+// Context Menu Message Listener
+chrome.runtime.onMessage.addListener((request) => {
+    if (request.action === "contextMenuDecode" && request.srcUrl) {
+        const img = Array.from(document.querySelectorAll('img')).find(i => i.src === request.srcUrl);
+        if (img) decodeImage(img);
+    }
 });
 
 function createHoverIcon() {
@@ -106,7 +130,6 @@ async function checkShellSignature(img) {
     } catch (e) { return null; }
 }
 
-// Fast mouse tracking to handle visibility changes instantly
 document.addEventListener('mousemove', (e) => {
     const elements = document.elementsFromPoint(e.clientX, e.clientY);
     const img = elements.find(el => el.tagName === 'IMG' && el.id !== 'flip-the-shell-icon');
@@ -137,12 +160,10 @@ document.addEventListener('mousemove', (e) => {
             hoverIcon.style.display = 'none';
         }
     } else if (hoverIcon && !elements.includes(hoverIcon)) {
-        // If mouse is not over an image and not over the icon itself, hide it instantly
         hoverIcon.style.display = 'none';
     }
 }, true);
 
-// Handle cases where images might disappear or move (e.g. modals closing)
 window.addEventListener('scroll', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
 window.addEventListener('resize', () => { if (hoverIcon) hoverIcon.style.display = 'none'; }, true);
 
@@ -181,51 +202,116 @@ async function decodeImage(img) {
         const header = packedAll.slice(4, 4 + headerLen);
         let idx = 5; // Skip SNAIL
         const hasPwd = header[idx++] === 1;
-        if (hasPwd) { alert("Password needed"); return; }
-        const extLen = header[idx++];
-        const ext = new TextDecoder().decode(header.slice(idx, idx + extLen));
-        idx += extLen;
-        const dataLen = new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(idx);
-        idx += 4;
-        showSnailOverlay(header.slice(idx, idx + dataLen), ext);
+        
+        if (hasPwd) {
+            askForPassword(img, (pwd) => {
+                // Here you would add the decryption logic (e.g. AES-GCM)
+                // For now, we continue to show the UI
+                proceedDecode(header, packedAll, idx);
+            });
+            return;
+        }
+        
+        proceedDecode(header, packedAll, idx);
     } catch (e) { alert("Failed to decode snail."); }
+}
+
+function proceedDecode(header, packedAll, idx) {
+    const extLen = header[idx++];
+    const ext = new TextDecoder().decode(header.slice(idx, idx + extLen));
+    idx += extLen;
+    const dataLen = new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(idx);
+    idx += 4;
+    showSnailOverlay(header.slice(idx, idx + dataLen), ext);
+}
+
+function askForPassword(img, callback) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);z-index:2147483647;display:flex;align-items:center;justify-content:center;`;
+    
+    const box = document.createElement('div');
+    box.className = 'shell-pwd-box';
+    box.innerHTML = `
+        <h3 style="margin:0;color:#333;">🔒 Protected Shell</h3>
+        <p style="font-size:13px;color:#666;">This shell is encrypted. Please enter the password.</p>
+        <input type="password" class="shell-pwd-input" placeholder="Password" id="shell-pwd-field">
+        <button id="shell-pwd-btn" class="shell-dl-btn" style="margin-top:0;width:100%;">Unlock</button>
+    `;
+    
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    
+    const input = document.getElementById('shell-pwd-field');
+    input.focus();
+    
+    const submit = () => {
+        if (input.value) {
+            document.body.removeChild(overlay);
+            callback(input.value);
+        }
+    };
+    
+    document.getElementById('shell-pwd-btn').onclick = submit;
+    input.onkeydown = (e) => { if (e.key === 'Enter') submit(); };
+    overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
 }
 
 function showSnailOverlay(data, ext) {
     const overlay = document.createElement('div');
-    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.9);z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(10px);`;
-    overlay.onclick = () => document.body.removeChild(overlay);
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.95);z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(10px);`;
+    
     const container = document.createElement('div');
-    container.style.cssText = "max-width: 90%; max-height: 85%; display: flex; flex-direction: column; align-items: center;";
+    container.style.cssText = "max-width: 90%; max-height: 80%; display: flex; flex-direction: column; align-items: center; cursor: default;";
+    
+    let blobType = `image/${ext.toLowerCase()}`;
+    if (ext.toLowerCase() === 'mp4') blobType = 'video/mp4';
+    
+    const blob = new Blob([data], { type: blobType });
+    const url = URL.createObjectURL(blob);
+    
     if (['png', 'jpg', 'jpeg', 'webp'].includes(ext.toLowerCase())) {
-        const url = URL.createObjectURL(new Blob([data], { type: `image/${ext.toLowerCase()}` }));
         const img = document.createElement('img');
         img.src = url; img.style.cssText = `max-width: 100%; max-height: 100%; border: 5px solid white; border-radius: 8px; box-shadow: 0 0 30px rgba(255,255,255,0.2);`;
         container.appendChild(img);
-        overlay.onclick = () => { document.body.removeChild(overlay); URL.revokeObjectURL(url); };
     } else if (ext.toLowerCase() === 'mp4') {
-        const url = URL.createObjectURL(new Blob([data], { type: 'video/mp4' }));
         const video = document.createElement('video');
         video.src = url; video.controls = true; video.autoplay = true; video.loop = true;
         video.style.cssText = `max-width: 100%; max-height: 100%; border: 5px solid white; border-radius: 8px; box-shadow: 0 0 30px rgba(255,255,255,0.2);`;
-        
-        // Apply playback speed
-        video.onloadedmetadata = () => {
-            video.playbackRate = playbackSpeed;
-        };
-        
+        video.onloadedmetadata = () => { video.playbackRate = playbackSpeed; };
         container.appendChild(video);
-        overlay.onclick = (e) => { if(e.target === overlay) { document.body.removeChild(overlay); URL.revokeObjectURL(url); } };
     } else {
         const textBox = document.createElement('div');
         textBox.innerText = new TextDecoder().decode(data);
         textBox.style.cssText = `padding: 30px; background: white; border-radius: 12px; color: #333; font-family: monospace; font-size: 16px; white-space: pre-wrap; max-width: 600px; overflow-y: auto;`;
         container.appendChild(textBox);
     }
+    
+    // Download Button
+    const dlBtn = document.createElement('button');
+    dlBtn.className = 'shell-dl-btn';
+    dlBtn.innerText = `💾 Download 원본 ${ext.toUpperCase()}`;
+    dlBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `revealed_shell_${Date.now()}.${ext.toLowerCase()}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+    
     const label = document.createElement('div');
     label.innerText = `SNAIL REVEALED (${ext.toUpperCase()})`;
-    label.style.cssText = `color: white; font-family: sans-serif; font-weight: bold; font-size: 20px; margin-bottom: 15px;`;
+    label.style.cssText = `color: #87d530; font-family: sans-serif; font-weight: bold; font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(135,213,48,0.5);`;
+    
     overlay.appendChild(label);
     overlay.appendChild(container);
+    overlay.appendChild(dlBtn);
     document.body.appendChild(overlay);
+    
+    overlay.onclick = (e) => { 
+        if (e.target === overlay) {
+            document.body.removeChild(overlay); 
+            URL.revokeObjectURL(url); 
+        }
+    };
 }

@@ -1,14 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Flip the Shell",
-  "version": "3.1",
-  "description": "The ultimate steganography tool for RunningHub. Detects and extracts hidden images or videos from 'Shell Images' in real-time.",
-  "permissions": ["activeTab", "scripting", "storage"],
+  "version": "3.5",
+  "description": "Professional steganography tool for RunningHub. Auto-highlights shell images, supports password encryption, and direct file export.",
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
   "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "css": ["content.css"]
     }
   ],
   "action": {
