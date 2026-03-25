@@ -2,13 +2,22 @@
 let hoverIcon = null;
 let currentImg = null;
 let iconPosition = 'center';
+let playbackSpeed = 1.0; // Default speed
 const shellCache = new WeakMap();
 
 const SKIP_W_RATIO = 0.40;
 const SKIP_H_RATIO = 0.08;
 
-chrome.storage.local.get(['iconPosition'], (result) => { if (result.iconPosition) iconPosition = result.iconPosition; });
-chrome.storage.onChanged.addListener((changes) => { if (changes.iconPosition) iconPosition = changes.iconPosition.newValue; });
+// Load saved settings
+chrome.storage.local.get(['iconPosition', 'playbackSpeed'], (result) => { 
+    if (result.iconPosition) iconPosition = result.iconPosition; 
+    if (result.playbackSpeed) playbackSpeed = parseFloat(result.playbackSpeed);
+});
+
+chrome.storage.onChanged.addListener((changes) => { 
+    if (changes.iconPosition) iconPosition = changes.iconPosition.newValue; 
+    if (changes.playbackSpeed) playbackSpeed = parseFloat(changes.playbackSpeed.newValue);
+});
 
 function createHoverIcon() {
     const icon = document.createElement('div');
@@ -199,6 +208,12 @@ function showSnailOverlay(data, ext) {
         const video = document.createElement('video');
         video.src = url; video.controls = true; video.autoplay = true; video.loop = true;
         video.style.cssText = `max-width: 100%; max-height: 100%; border: 5px solid white; border-radius: 8px; box-shadow: 0 0 30px rgba(255,255,255,0.2);`;
+        
+        // Apply playback speed
+        video.onloadedmetadata = () => {
+            video.playbackRate = playbackSpeed;
+        };
+        
         container.appendChild(video);
         overlay.onclick = (e) => { if(e.target === overlay) { document.body.removeChild(overlay); URL.revokeObjectURL(url); } };
     } else {
